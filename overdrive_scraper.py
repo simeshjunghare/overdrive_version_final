@@ -54,6 +54,9 @@ async def extract_publishers_async(company_name, min_similarity=0.7):
                 if publisher_name:
                     publisher_name = publisher_name.replace("Filter by", "").strip()
                 publisher_url = await a_tag.get_attribute("href")
+                # Convert relative URLs to absolute
+                if publisher_url and not publisher_url.startswith(('http://', 'https://')):
+                    publisher_url = f"https://www.overdrive.com{publisher_url}" if publisher_url.startswith('/') else f"{base_url}/{publisher_url}"
 
                 all_publishers.append({
                     "publisher_name": publisher_name,
@@ -72,6 +75,7 @@ async def extract_publishers_async(company_name, min_similarity=0.7):
 
         except Exception as e:
             print(f"Error extracting publishers: {e}")
+            print("If the error is about timeout, you might want to increase the timeout value or check your internet connection.")
 
         await browser.close()
 
